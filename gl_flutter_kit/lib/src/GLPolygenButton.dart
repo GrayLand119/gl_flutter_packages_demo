@@ -18,7 +18,8 @@ class GLPolygenButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Rect maskBounds = maskPath.getBounds();
+    Rect maskBounds = maskPath?.getBounds() ?? Rect.zero;
+    
     var _v = CustomPaint(
       painter: GLPolygenPainter(maskPath: maskPath, maskColor: maskColor),
       child: child ?? Container(height:maskBounds.height,width: maskBounds.width,),

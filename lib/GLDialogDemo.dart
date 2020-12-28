@@ -21,7 +21,7 @@ class GLDialogDemo extends StatelessWidget {
         GLCommonCell(
           title: 'AlertDialog - normal',
           onTap: () async {
-            bool _res = await GLBaseDialog.show(context,
+            bool _res = await GLAlertDialog.show(context,
                 title: 'Your Title',
                 content: 'Your content blablabla...',
                 cancelTitle: 'Cancel',
@@ -31,7 +31,7 @@ class GLDialogDemo extends StatelessWidget {
         GLCommonCell(
           title: 'AlertDialog - dangerous action style',
           onTap: () async {
-            bool _res = await GLBaseDialog.show(context,
+            bool _res = await GLAlertDialog.show(context,
                 title: 'Your Title',
                 content: 'Your content blablabla...',
                 cancelTitle: 'Cancel',
@@ -42,7 +42,7 @@ class GLDialogDemo extends StatelessWidget {
         GLCommonCell(
           title: 'AlertDialog - Vertical action',
           onTap: () async {
-            bool _res = await GLBaseDialog.show(context,
+            bool _res = await GLAlertDialog.show(context,
                 title: 'Your Title',
                 content: 'Your content blablabla...',
                 cancelTitle: 'Cancel',

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:gl_flutter_kit/gl_flutter_kit.dart';
 import 'GLUtils.dart';
 
 /**
@@ -41,7 +42,9 @@ class GLCommonButton extends StatelessWidget {
         width: width,
         clipBehavior: Clip.hardEdge,
         decoration: BoxDecoration(
-            color: onTap == null ? GLSplashColor : GLColorMap[5],
+            color: onTap == null ?
+            GLAppStyle.instance.currentConfig.splashColor :
+            GLAppStyle.instance.currentConfig.primaryColor,
             borderRadius: isRoundRect ? BorderRadius.circular(height / 2.0) : BorderRadius.zero),
         child: FlatButton(
           onPressed: onTap == null ? null : () async {
@@ -51,7 +54,7 @@ class GLCommonButton extends StatelessWidget {
             _tapped = false;
           },
           child: GLText(title, style),
-          splashColor: GLSplashColor,
+          splashColor: GLAppStyle.instance.currentConfig.separatorColor,
         ),
       ),
     );

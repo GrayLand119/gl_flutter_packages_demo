@@ -37,7 +37,7 @@ class GLUIComponents extends StatelessWidget {
       ),
       GLDemoCell(
         title: 'GLImage.netImage - loading - custom placeholder',
-        child: GLImage.netImage(imgUrl: 'https://www.baidu.com/img/not_exist_image_for_test_loading_placeholder.jpg', width: 120, placeholder: SpinKitThreeBounce(color: GLColorMap[5],)),
+        child: GLImage.netImage(imgUrl: 'https://www.baidu.com/img/not_exist_image_for_test_loading_placeholder.jpg', width: 120, placeholder: SpinKitThreeBounce(color: GLAppStyle.instance.currentConfig.primaryColor,)),
       ),
       GLDemoCell(
         title: 'GLCircleAvatar',

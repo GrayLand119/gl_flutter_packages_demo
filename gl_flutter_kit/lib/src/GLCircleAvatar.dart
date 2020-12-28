@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:gl_flutter_kit/gl_flutter_kit.dart';
 import 'package:gl_flutter_kit/src/GLUtils.dart';
 
 /**
@@ -41,7 +42,7 @@ class GLCircleAvatar extends StatelessWidget {
     if (placeHolder == null) {
       placeHolder = (ctx, url) {
         return Container(
-          child: SpinKitFadingCircle(size: 25, color: GLColorMap[5]),
+          child: SpinKitFadingCircle(size: 25, color: GLAppStyle.instance.currentConfig.primaryColor),
           color: Colors.white,
         );
       };

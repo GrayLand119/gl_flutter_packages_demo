@@ -249,7 +249,7 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
           if (_hasTitle) _iconSize-=10.0;
           if (_hasContent) _iconSize-=10.0;
           var _spin = SpinKitWave(
-            color: GLPrimaryColor,
+            color: GLAppStyle.instance.currentConfig.primaryColor,
             itemCount: 12,
             size: _iconSize,
           );
@@ -349,7 +349,7 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
   void showErrorMessage({String message}) {
     // dlog.w('showErrorMessage, $message');
     // TODO: 添加失败图标
-    showMessage(title: '出错啦', message: message);
+    showMessage(title: '出错啦', message: message, duration: Duration(seconds: 3));
   }
 
   void showSuccessMessage({String message}) {

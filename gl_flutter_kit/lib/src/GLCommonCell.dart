@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:gl_flutter_kit/gl_flutter_kit.dart';
 import 'GLUtils.dart';
 
 import 'GLTapped.dart';
@@ -37,7 +38,7 @@ class GLCommonCell extends StatelessWidget {
     if (showBottomSeperator) {
       border = Border(bottom: BorderSide(
           width: 0.5,
-          color: GLSeperatorColor
+          color: GLAppStyle.instance.currentConfig.separatorColor
       ));
     }
 
