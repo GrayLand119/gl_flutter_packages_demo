@@ -29,17 +29,52 @@ typedef BoolCallback = Future<bool> Function();
 
 const double kDefaultPaddingHorizontal = 16.0;
 
+class GLAsyncResult<T> {
+  final bool isSuccessful;
+
+  final T result;
+  final int errorCode;
+  final String errorDesc;
+
+  final dynamic extra;
+
+  GLAsyncResult(this.isSuccessful, {this.result, this.errorCode, this.errorDesc, this.extra});
+
+  static failedWith(GLAsyncResult res) {
+    return GLAsyncResult(false, errorDesc: res.errorDesc, errorCode: res.errorCode, result: null);
+  }
+
+  @override
+  String toString() {
+    return "isSuccessful: $isSuccessful, error: $errorDesc - $errorCode";
+  }
+}
+
 /// Style format: 大小-颜色-字体. e.g "321"
 TextStyle GLTextStyle(String style) {
   assert(style.length >= 3);
   var _config = GLAppStyle.instance.currentConfig;
+  int iFontSize;
+  int iColor;
+  int iFontWeight;
+  if (style.contains(',')) {
+    var _eles = style.split(',');
+    iFontSize = int.tryParse(_eles[0]) ?? 1;
+    iColor = int.tryParse(_eles[1]) ?? 1;
+    iFontWeight = int.tryParse(_eles[2]) ?? 1;
+  }else {
+    iFontSize = int.tryParse(style[0]) ?? 1;
+    iColor = int.tryParse(style[1]) ?? 1;
+    iFontWeight = int.tryParse(style[2]) ?? 1;
+  }
+
   return TextStyle(
-    fontSize: _config.fontSizeMap[int.parse(style[0])] / 2,
+    fontSize: _config.fontSizeMap[iFontSize] / 2,
     //1.3281472327365
-    color: _config.colorsMap[int.parse(style[1])],
+    color: _config.colorsMap[iColor],
     fontFamily: _config.fontFamilyName,
     fontStyle: FontStyle.normal,
-    fontWeight: _config.fontWeightMap[int.parse(style[2])],
+    fontWeight: _config.fontWeightMap[iFontWeight],
     decoration: TextDecoration.none,
   );
 }
@@ -84,8 +119,8 @@ TextPainter GLTextPainter(String text, String style,
   return textPainter;
 }
 
-const String GL_ICON_BASE = "res/icons/";
-const String GL_IMAGE_BASE = "res/images/";
+const String GL_ICON_BASE = "res/svg/";
+const String GL_IMAGE_BASE = "res/png/";
 const String GL_SVG_EXTENSION = "svg";
 const String GL_PNG_EXTENSION = "png";
 
@@ -119,7 +154,9 @@ class GLImage {
       double width,
       double height,
       BoxFit fit = BoxFit.cover,
-      Widget placeholder}) {
+      Widget placeholder,
+      // VoidCallback completion,
+      }) {
     if (imgUrl.startsWith('/')) {
       return Image.file(
         File(imgUrl),
@@ -128,10 +165,12 @@ class GLImage {
         fit: fit,
       );
     }
+
     if (placeholder == null) {
       placeholder = SpinKitFadingCircle(size: 25, color: GLAppStyle.instance.currentConfig.primaryColor);
       // placeholder = GLImage.svgAsset('icon_avatar', color: UIPrimaryColor);
     }
+
     return CachedNetworkImage(
       fit: fit,
       imageUrl: imgUrl,
@@ -140,6 +179,20 @@ class GLImage {
       placeholder: (ctx, url) {
         return placeholder;
       },
+      // imageBuilder: (ctx, imgProvider) {
+      //   print('aAAAAAA: imgProvider: $imgProvider');
+      //   print('completion!!!!');
+      //   return Image(image: imgProvider, fit: BoxFit.cover,);
+      // },
+      // progressIndicatorBuilder: (ctx, url, progress) {
+      //   print('progress: ${progress.progress}');
+      //   if (progress.downloaded == progress.totalSize) {
+      //     print('completion!!!!');
+      //     completion?.call();
+      //   }
+      //   if (placeholder != null) return placeholder;
+      //   return SpinKitFadingCircle(size: 25, color: GLAppStyle.instance.currentConfig.primaryColor);
+      // },
     );
   }
 

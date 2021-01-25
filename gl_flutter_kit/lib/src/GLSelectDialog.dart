@@ -105,9 +105,10 @@ class _State extends State<GLSelectDialog> with SingleTickerProviderStateMixin {
     if ((content?.length ?? 0) > 0) {
       var tP = TextPainter(
           text: GLTextSpan(content, '612'), maxLines: 6, textDirection: TextDirection.ltr)
-        ..layout(maxWidth: maxWidth);
+        ..layout(maxWidth: maxWidth - 24);
       contentWidget =
-          Container(child: GLText(content, '612', textAlign: TextAlign.center), height: tP.height);
+          Container(padding: EdgeInsets.symmetric(horizontal: 12),
+              child: GLText(content, '612', textAlign: TextAlign.center), height: tP.height);
       totalH += tP.height;
     }
 
@@ -140,7 +141,7 @@ class _State extends State<GLSelectDialog> with SingleTickerProviderStateMixin {
           )));
       cH = actions.length * 50.0;
     }else{
-      cH += 16;
+      // cH += 8;
     }
 
     /// Calculate first

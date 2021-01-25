@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 
 /// Created by GrayLand119
 /// on 2020/12/15
-class GLCrossFadePageRoute extends PageRouteBuilder {
+class GLCrossFadePageRoute<T> extends PageRouteBuilder<T> {
   GLCrossFadePageRoute({@required Widget page})
       : super(
     pageBuilder: (ctx, a1, a2) => page,

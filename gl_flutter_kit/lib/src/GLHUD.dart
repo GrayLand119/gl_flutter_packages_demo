@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
@@ -12,12 +14,15 @@ enum GLHUDType {
   dismissed,
   loading,
   message,
+  progress,
+
   /// using the [GLHUD] indicatorChild property.
   custom,
 }
 
 class GLHUD extends StatefulWidget {
   Widget customChild;
+
   final Widget child;
   final bool cancelEnable;
   final double pannelWidth;
@@ -31,11 +36,13 @@ class GLHUD extends StatefulWidget {
 
   WillPopCallback onWillPop;
 
+  @override
   static GLHUDState of(BuildContext context) {
     assert(context != null);
     return context.findAncestorStateOfType<GLHUDState>();
   }
 
+  @override
   static GlobalKey<GLHUDState> genKey() => GlobalKey<GLHUDState>();
 
   GLHUD({
@@ -64,15 +71,30 @@ class GLHUD extends StatefulWidget {
 class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
   GLHUDType _hudState;
 
-  String _content;
-  String _contentLast;
+  /// Default text style is '511', meaning use fotmat like that:
+  /// GLAppStyle.instance.currentConfig.fontSizeMap[5]
+  /// GLAppStyle.instance.currentConfig.colorsMap[1]
+  /// GLAppStyle.instance.currentConfig.fontWeightMap[1]
+  String titleStyle;// Title label style
+  String contentStyle; // Message label style
   String _title;
+  String _content; // message
+  String _contentLast;
 
   Timer _delayHideTimer;
 
   Duration _autoHideDuration;
 
   VoidCallback _timeOutCallback;
+
+  Widget _extendWidget;
+
+  double _extendWidgetHeight = 0.0;
+  double _progressValue = 0.0;
+  double _maxWidth;
+  double loadingWidgetWH;
+
+  EdgeInsets padding;
 
   GLHUDType get hudState => _hudState;
 
@@ -87,27 +109,35 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
 
   bool update;
   AnimationController _fadeController;
+
   // AnimationController _rotateController;
   Animation _animation;
   Tween<double> _opacityTween;
 
+  double _spaceBetweenTitleAndContent;
+
   @override
   void initState() {
+    titleStyle = '411';
+    contentStyle = '521';
+
+    padding = const EdgeInsets.all(16.0);
+    _spaceBetweenTitleAndContent = 12.0;
+     _maxWidth = SCREEN_WIDTH - 100;
+    loadingWidgetWH = 50.0;
+
     _hudState = widget.initialState;
-    // _hudState = GLHUDType.dismissed;
+
     super.initState();
 
     _fadeController = AnimationController(duration: widget.fadeDuration, vsync: this);
-    // _rotateController = AnimationController(duration: Duration(seconds: 2), vsync: this);
     _animation = Tween(begin: 0.0, end: 1.0).animate(_fadeController);
-    // _opacityTween = Tween(begin: 0.0, end: 1.0);
   }
 
   @override
   void dispose() {
     _fadeController.dispose();
     _delayHideTimer?.cancel();
-    // _rotateController.dispose();
     super.dispose();
   }
 
@@ -180,122 +210,15 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
           break;
         }
 
-      case GLHUDType.message: {
-        _show();
-        bool _hasTitle = (_title?.length ?? 0) > 0;
-        bool _hasContent = (_content?.length ?? 0) > 0;
-        List<Widget> _cols = [];
-        double _exH = 0.0;
-        double _exW = 0.0;
-        if (_hasTitle) {
-          Text _t1 = GLText(_title, '411');
-          _cols.add(_t1);
-        }else {
-          _exH -= 50.0;
-        }
-
-        if (_hasContent) {
-          Text _t1 = GLText(_content, '522', textAlign: TextAlign.center);
-          Size _s1 = _t1.layout(maxWidth: SCREEN_WIDTH - 100);
-          // dlog.i('_s1 h : ${_s1.height}');
-          if (_s1.width > widget.pannelWidth - 50.0) {
-            _exW += _s1.width - widget.pannelWidth + 50.0;
-          }
-          if (_s1.height > 60) {
-            _exH += _s1.height - 60;
-          }
-          if (_hasTitle) _cols.add(SizedBox(height: 20,));
-          _cols.add(_t1);
-        }
-
-        child = _defaultContainer(
-            exWidth: _exW,
-            exHeight: _exH,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: _cols,
-            ));
-
-        // if (_contentLast != _content) {
-        //   dlog.w('message: _autoHideDuration: ${_autoHideDuration}');
-        //   _delayHideTimer?.cancel();
-        //   _delayHideTimer = Timer(_autoHideDuration, () {
-        //     dlog.w('message: on hide');
-        //     hide();
-        //   });
-        //   _contentLast = _content;
-        // }
-
+      case GLHUDType.message:
+        child = _messageHUD();
         break;
-      }
+      case GLHUDType.progress:
+        child = _progressHUD();
+        break;
       case GLHUDType.loading:
       default:
-        {
-          _show();
-          // var _r1 = RotationTransition(
-          //   turns: Tween(begin: 0.0, end: pi * 2).animate(_rotateController),
-          //   child: Icon(
-          //     Icons.autorenew_rounded,
-          //     size: 80,
-          //     color: Colors.deepOrange,
-          //   ));
-
-          // var _r2 = SpinKitSpinningCircle(color: UIPrimaryColor,);
-          // var _r2 = SpinKitRotatingPlain(color: UIPrimaryColor,);
-          // var _r2 = SpinKitRotatingCircle(color: UIPrimaryColor,);
-          bool _hasTitle = (_title?.length ?? 0) > 0;
-          bool _hasContent = (_content?.length ?? 0) > 0;
-          double _iconSize = 50.0;
-          if (_hasTitle) _iconSize-=10.0;
-          if (_hasContent) _iconSize-=10.0;
-          var _spin = SpinKitWave(
-            color: GLAppStyle.instance.currentConfig.primaryColor,
-            itemCount: 12,
-            size: _iconSize,
-          );
-          // var _spin = SpinKitThreeBounce(
-          //   color: UIPrimaryColor,
-          //   // itemCount: 12,
-          //   size: 32,
-          // );
-
-          List<Widget> _cols = [];
-          double _exH = 0.0;
-          double _exW = 0.0;
-          if (_hasTitle) {
-            Text _t1 = GLText(_title, '411');
-            _cols.add(_t1);
-            _cols.add(Spacer());
-            _exH += 20.0;
-          }else  {
-            _cols.add(Spacer());
-          }
-
-          _cols.add(_spin);
-
-          if (_hasContent) {
-            Text _t1 = GLText(_content, '522', textAlign: TextAlign.center);
-            Size _s1 = _t1.layout(maxWidth: SCREEN_WIDTH - 100);
-            if (_s1.width > widget.pannelWidth - 32.0) {
-              _exW += _s1.width - widget.pannelWidth + 32.0;
-            }
-            if (_s1.height > 30) {
-              _exH += _s1.height - 10;
-            }
-            _cols.add(Spacer());
-            _cols.add(_t1);
-          }else {
-            _cols.add(Spacer());
-          }
-
-          child = _defaultContainer(
-              exWidth: _exW,
-              exHeight: _exH,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: _cols,
-              ));
-        }
+        child = _loadingHUD();
     }
 
     return AnimatedBuilder(
@@ -315,10 +238,11 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
         });
   }
 
-  Widget _defaultContainer({Widget child, double exWidth=0.0, double exHeight=0.0}) {
+  Widget _defaultContainer({Widget child, double exWidth = 0.0, double exHeight = 0.0}) {
+
     return Center(
       child: Container(
-        padding: const EdgeInsets.all(16.0),
+        padding: padding,
         width: widget.pannelWidth + exWidth,
         height: widget.pannelHeight + exHeight,
         decoration:
@@ -328,12 +252,15 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
     );
   }
 
-  void showLoading({String title, String message, Duration timeOut = const Duration(seconds: 30), VoidCallback timeOutCallback}) {
+  void showLoading({String title, String message, Duration timeOut = const Duration(
+      seconds: 30), VoidCallback timeOutCallback, Widget extendWidget, double extendWidgetHeight}) {
     _title = title;
     _content = message;
     _autoHideDuration = timeOut;
     _timeOutCallback = timeOutCallback;
     hudState = GLHUDType.loading;
+    _extendWidget = extendWidget;
+    _extendWidgetHeight = extendWidgetHeight ?? 0.0;
 
     if (_autoHideDuration != null) {
       _delayHideTimer?.cancel();
@@ -344,6 +271,35 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
         hide();
       });
     }
+  }
+
+  void showProgress({String title, String message, double progress}) {
+    _title = title;
+    _content = message;
+    _extendWidgetHeight = 0;
+    _extendWidget = null;
+    progress = progress.toStringAsFixed(2).toDouble();
+    if (_progressValue != progress) {
+      setState(() {
+        _progressValue = progress;
+      });
+    } else {
+      _progressValue = progress;
+    }
+
+    hudState = GLHUDType.progress;
+    _delayHideTimer?.cancel();
+
+
+    // if (_autoHideDuration != null) {
+    //   _delayHideTimer?.cancel();
+    //   // dlog.i('loading: _autoHideDuration: ${_autoHideDuration}');
+    //   _delayHideTimer = Timer(_autoHideDuration, () {
+    //     _timeOutCallback?.call();
+    //     // dlog.i('loading: on hide');
+    //     hide();
+    //   });
+    // }
   }
 
   void showErrorMessage({String message}) {
@@ -357,7 +313,8 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
     showMessage(message: message);
   }
 
-  void showMessage({String title, String message, Duration duration = const Duration(milliseconds: 1200)}) {
+  void showMessage(
+      {String title, String message, Duration duration = const Duration(milliseconds: 1200)}) {
     _delayHideTimer?.cancel();
     _title = title;
     _content = message;
@@ -372,7 +329,8 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
     });
   }
 
-  void showCustom({Widget child, Duration timeOut = const Duration(seconds: 30), VoidCallback timeOutCallback}) {
+  void showCustom({Widget child, Duration timeOut = const Duration(
+      seconds: 30), VoidCallback timeOutCallback}) {
     if (child != null) {
       widget.customChild = child;
     }
@@ -400,5 +358,193 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
     _timeOutCallback = null;
     _dismiss();
     hudState = GLHUDType.dismissed;
+  }
+
+  @override
+  Widget _messageHUD() {
+    _show();
+    bool _hasTitle = (_title?.length ?? 0) > 0;
+    bool _hasContent = (_content?.length ?? 0) > 0;
+    List<Widget> _cols = [];
+
+    double minWidth = widget.pannelWidth;
+
+    double calcWidth = padding.horizontal;
+    double calcHeight = padding.vertical;
+
+    if (_hasTitle) {
+      Text _t1 = GLText(_title, titleStyle);
+      Size _s1 = _t1.layout(maxWidth: _maxWidth, minWidth: minWidth);
+
+      calcWidth = max(calcWidth, _s1.width + padding.horizontal);
+      calcHeight += _s1.height;
+
+      _cols.add(_t1);
+    }
+
+    if (_hasContent) {
+      Text _t1 = GLText(_content, contentStyle, textAlign: TextAlign.center);
+      Size _s1 = _t1.layout(maxWidth: _maxWidth, minWidth: minWidth);
+
+      calcWidth = max(calcWidth, _s1.width + padding.horizontal);
+      calcHeight += _s1.height;
+
+      if (_hasTitle) {
+        _cols.add(SizedBox(height: _spaceBetweenTitleAndContent,));
+        calcHeight += _spaceBetweenTitleAndContent;
+      }
+
+      _cols.add(_t1);
+    }
+
+    calcWidth = max(calcWidth, widget.pannelWidth);
+    calcHeight = max(calcHeight, 70);
+
+    calcWidth = calcWidth - widget.pannelWidth;
+    calcHeight = calcHeight - widget.pannelHeight;
+
+    return _defaultContainer(
+        exWidth: calcWidth,
+        exHeight: calcHeight,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: _cols,
+        ));
+  }
+
+  @override
+  Widget _progressHUD() {
+    _show();
+
+    bool _hasTitle = (_title?.length ?? 0) > 0;
+    bool _hasContent = (_content?.length ?? 0) > 0;
+
+    List<Widget> _cols = [];
+    double _exH = padding.vertical;
+    double _exW = widget.pannelWidth;
+
+    if (_hasTitle) {
+      Text _t1 = GLText(_title, titleStyle);
+      Size _s1 = _t1.layout(maxWidth: _maxWidth);
+
+      _exH += _s1.height + 16.0;
+      _exW = max(_exW, _s1.width + padding.horizontal);
+
+      _cols.add(_t1);
+      _cols.add(Spacer());
+    } else {
+      _cols.add(Spacer());
+    }
+
+    var _spin = CircularProgressIndicator(
+      value: _progressValue, backgroundColor: GLAppStyle.instance.currentConfig.separatorColor,);
+    _exH += loadingWidgetWH;
+    _cols.add(SizedBox(width: loadingWidgetWH,height: loadingWidgetWH, child: _spin));
+
+    if (_hasContent) {
+      Text _t1 = GLText(_content, contentStyle, textAlign: TextAlign.center);
+      Size _s1 = _t1.layout(maxWidth: _maxWidth);
+
+      _exW = max(_s1.width + padding.horizontal, _exW);
+      _exH += _s1.height + 16.0;
+
+      _cols.add(Spacer());
+      _cols.add(_t1);
+    } else {
+      _cols.add(Spacer());
+    }
+
+    if (_extendWidget != null) {
+      _cols.add(SizedBox(height: _extendWidgetHeight,
+        child: _extendWidget,));
+      _exH += _extendWidgetHeight;
+    }
+
+    _exW = _exW - widget.pannelWidth;
+    _exH = max(_exH, widget.pannelHeight) - widget.pannelHeight;
+
+    return _defaultContainer(
+        exWidth: _exW,
+        exHeight: _exH,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: _cols,
+        ));
+  }
+
+  @override
+  Widget loadingSpinWidget({double size}) {
+    return SpinKitWave(
+      color: GLAppStyle.instance.currentConfig.primaryColor,
+      itemCount: 12,
+      size: size != null ? size : loadingWidgetWH,
+    );
+  }
+
+  @override
+  Widget _loadingHUD() {
+    _show();
+
+    // var _r2 = SpinKitSpinningCircle(color: UIPrimaryColor,);
+    // var _r2 = SpinKitRotatingPlain(color: UIPrimaryColor,);
+    // var _r2 = SpinKitRotatingCircle(color: UIPrimaryColor,);
+    bool _hasTitle = (_title?.length ?? 0) > 0;
+    bool _hasContent = (_content?.length ?? 0) > 0;
+
+    List<Widget> _cols = [];
+    double _exH = padding.vertical;
+    double _exW = widget.pannelWidth;
+
+    double _tLoadingWH = loadingWidgetWH;
+
+    if (_hasContent || _hasContent) {
+      _tLoadingWH -= 12;
+    }
+
+    if (_hasTitle) {
+      Text _t1 = GLText(_title, titleStyle);
+      Size _s1 = _t1.layout(maxWidth: _maxWidth);
+
+      _exH += _s1.height + 16;
+      _exW = max(_exW, _s1.width + padding.horizontal);
+      _cols.add(_t1);
+      _cols.add(Spacer());
+    } else {
+      _cols.add(Spacer());
+    }
+
+    var _spin = loadingSpinWidget(size: _tLoadingWH);
+    _cols.add(_spin);
+    _exH += _tLoadingWH;
+
+    if (_hasContent) {
+      Text _t1 = GLText(_content, contentStyle, textAlign: TextAlign.center);
+      Size _s1 = _t1.layout(maxWidth: _maxWidth);
+
+      _exH += _s1.height + 16;
+      _exW = max(_exW, _s1.width + padding.horizontal);
+
+      _cols.add(Spacer());
+      _cols.add(_t1);
+    } else {
+      _cols.add(Spacer());
+    }
+
+    if (_extendWidget != null) {
+      _cols.add(SizedBox(height: _extendWidgetHeight,
+        child: _extendWidget,));
+      _exH += _extendWidgetHeight;
+    }
+
+    _exH = max(_exH, widget.pannelHeight) - widget.pannelHeight;
+    _exW = _exW - widget.pannelWidth;
+
+    return _defaultContainer(
+        exWidth: _exW,
+        exHeight: _exH,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: _cols,
+        ));
   }
 }

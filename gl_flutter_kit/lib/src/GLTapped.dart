@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class GLTapped extends StatefulWidget {
-  GLTapped({this.child, this.onTap, this.onLongTap, this.onTapParent});
+  GLTapped({this.child, this.onTap, this.onLongTap, this.onTapParent, this.behavior});
+  final HitTestBehavior behavior;
   final Widget child;
   final Function onTap;
   final Function(Widget w) onTapParent;
@@ -47,6 +48,7 @@ class _GLTappedState extends State<GLTapped> with SingleTickerProviderStateMixin
     Duration showDuration = const Duration(milliseconds: 660);
     
     return GestureDetector(
+      behavior: widget.behavior,
       onTap: () async {
         if (_isTapped) return;
         _isTapped = true;

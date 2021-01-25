@@ -42,7 +42,7 @@ extension GLString on String {
 
 extension GLDynamic on dynamic {
   double toDouble() {
-    print ('GLDynamic toDouble call!');
+    // print ('GLDynamic toDouble call!');
     if (this is String) return double.parse(this) ?? 0.0;
     if (this is double) return this;
     if (this is int) return this.toDouble();

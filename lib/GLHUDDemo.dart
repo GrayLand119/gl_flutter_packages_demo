@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:gl_flutter_kit/gl_flutter_kit.dart';
@@ -23,10 +24,11 @@ class _GLHUDDemoState extends State<GLHUDDemo> {
         appBar: GLAppBar(context, title: 'GLHUD Demo'),
         body: SafeArea(
           child: ListView(
+            physics: AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
             children: [
               GLCommonCell(
                 title: 'Show Loading HUD',
-                desc: 'Delayed 2 seconds to hide()',
+                desc: 'Loading only',
                 onTap: () {
                   _hud.currentState.showLoading();
                   Future.delayed(Duration(seconds: 2), () {
@@ -35,8 +37,8 @@ class _GLHUDDemoState extends State<GLHUDDemo> {
                 },
               ),
               GLCommonCell(
-                title: 'Show Loading HUD with title',
-                desc: '',
+                title: 'Show Loading HUD',
+                desc: 'With title',
                 onTap: () {
                   _hud.currentState.showLoading(title: 'Title');
                   Future.delayed(Duration(seconds: 2), () {
@@ -45,8 +47,8 @@ class _GLHUDDemoState extends State<GLHUDDemo> {
                 },
               ),
               GLCommonCell(
-                title: 'Show Loading HUD with title and messagae',
-                desc: '',
+                title: 'Show Loading HUD',
+                desc: 'With title and messagae',
                 onTap: () {
                   _hud.currentState.showLoading(title: 'Title', message: 'Loading message');
                   Future.delayed(Duration(seconds: 2), () {
@@ -55,10 +57,25 @@ class _GLHUDDemoState extends State<GLHUDDemo> {
                 },
               ),
               GLCommonCell(
+                title: 'Show Loading HUD',
+                desc: 'With extend widget',
+                onTap: () {
+                  _hud.currentState.showLoading(title: 'Title',
+                      // message: 'Loading message',
+                      extendWidgetHeight: 40, extendWidget: CupertinoButton(child: GLText('Stop Request', '651', textAlign: TextAlign.center), onPressed: () {
+                        _hud.currentState.hide();
+                      }));
+                  Future.delayed(Duration(seconds: 50), () {
+                    _hud.currentState.hide();
+                  });
+                },
+              ),
+              GLCommonCell(
                 title: 'Show messagae HUD',
                 desc: 'message only',
                 onTap: () {
-                  _hud.currentState.showMessage(message: 'This is a message.');
+                  // _hud.currentState.showMessage(message: 'This is a message.');
+                  _hud.currentState.showMessage(message: 'message.');
                 },
               ),
               GLCommonCell(
@@ -76,6 +93,26 @@ class _GLHUDDemoState extends State<GLHUDDemo> {
                   await Future.delayed(Duration(seconds: 1));
                   _hud.currentState.showMessage(
                       message: 'Show message after showLoading, GLHUD will auto hide.');
+                },
+              ),
+              GLCommonCell(
+                title: 'Show Progress',
+                desc: 'Title and content can be null',
+                onTap: () async {
+
+                  double i = 0;
+                  Timer.periodic(Duration(milliseconds: 100), (timer) {
+                    i += 0.05;
+                    _hud.currentState.showProgress(
+                        title: 'OTA',
+                        message: 'OTA progress ${(i * 100).toInt()}%',
+                        progress: i);
+                    if (i >= 1.0) {
+                      timer.cancel();
+                      _hud.currentState.hide();
+                    }
+                  });
+
                 },
               ),
               GLCommonCell(

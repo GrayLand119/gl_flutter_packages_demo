@@ -24,6 +24,7 @@ class GLAppStyleConfig {
     6: 26.0,
     7: 24.0,
     8: 22.0,
+    9: 18.0,
   };
 
   String fontFamilyName = "PingFang";

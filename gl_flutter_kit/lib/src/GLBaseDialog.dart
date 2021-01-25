@@ -17,39 +17,40 @@ class GLAlertDialog extends StatefulWidget {
   final bool isDangerousAction;
   final bool tapAnywhereToDismiss;
 
-  GLAlertDialog(
-      {this.title,
-      this.content,
-      this.cancelTitle,
-      this.okTitle,
-      this.maskColor,
-      this.actionAxis,
-      this.tapAnywhereToDismiss = false,
-      this.isDangerousAction,
-      Key key})
+  GLAlertDialog({this.title,
+    this.content,
+    this.cancelTitle,
+    this.okTitle,
+    this.maskColor,
+    this.actionAxis,
+    this.tapAnywhereToDismiss = false,
+    this.isDangerousAction,
+    Key key})
       : super(key: key);
 
   static Future<dynamic> show(BuildContext context,
       {String title,
-      String content,
-      String cancelTitle = '取消',
-      String okTitle = '',
-      Color maskColor = const Color(0x4DAEAE),
-      Axis actionAxis = Axis.horizontal,
-      bool isDangerousAction = false,
-      bool tapAnywhereToDismiss = false}) async {
+        String content,
+        String cancelTitle = '取消',
+        String okTitle = '',
+        Color maskColor = const Color(0x4DAEAE),
+        Axis actionAxis = Axis.horizontal,
+        bool isDangerousAction = false,
+        bool tapAnywhereToDismiss = false,
+        Key key,}) async {
     return await showDialog(
-            context: context,
-            child: GLAlertDialog(
-              title: title,
-              content: content,
-              cancelTitle: cancelTitle,
-              okTitle: okTitle,
-              maskColor: maskColor,
-              actionAxis: actionAxis,
-              tapAnywhereToDismiss: tapAnywhereToDismiss,
-              isDangerousAction: isDangerousAction,
-            )) ??
+        context: context,
+        child: GLAlertDialog(
+          key: key,
+          title: title,
+          content: content,
+          cancelTitle: cancelTitle,
+          okTitle: okTitle,
+          maskColor: maskColor,
+          actionAxis: actionAxis,
+          tapAnywhereToDismiss: tapAnywhereToDismiss,
+          isDangerousAction: isDangerousAction,
+        )) ??
         false;
   }
 
@@ -127,9 +128,11 @@ class _GLAlertDialogState extends State<GLAlertDialog> with SingleTickerProvider
     if ((content?.length ?? 0) > 0) {
       var tP = TextPainter(
           text: GLTextSpan(content, '612'), maxLines: 6, textDirection: TextDirection.ltr)
-        ..layout(maxWidth: maxWidth);
+        ..layout(maxWidth: maxWidth - 24);
+
       contentWidget =
-          Container(child: GLText(content, '612', textAlign: TextAlign.center), height: tP.height);
+          Container(padding: EdgeInsets.symmetric(horizontal: 12),
+              child: GLText(content, '612', textAlign: TextAlign.center), height: tP.height);
       totalH += tP.height;
     }
 
@@ -141,19 +144,19 @@ class _GLAlertDialogState extends State<GLAlertDialog> with SingleTickerProvider
     if (actions.isEmpty) {
       actions.add(Expanded(
           child: FlatButton(
-        onPressed: () => _dismiss(false),
-        child: GLText(widget.cancelTitle, '552'),
-        height: 50,
-      )));
+            onPressed: () => _dismiss(false),
+            child: GLText(widget.cancelTitle, '552'),
+            height: 50,
+          )));
     }
     String okTitle = widget.okTitle;
     if (okTitle.isNotEmpty) {
       actions.add(Expanded(
           child: FlatButton(
-        onPressed: () => _dismiss(true),
-        child: GLText(okTitle, widget.isDangerousAction ? '502' : '552'),
-        height: 50,
-      )));
+            onPressed: () => _dismiss(true),
+            child: GLText(okTitle, widget.isDangerousAction ? '502' : '552'),
+            height: 50,
+          )));
     }
 
     Widget actionContainer;
@@ -164,16 +167,17 @@ class _GLAlertDialogState extends State<GLAlertDialog> with SingleTickerProvider
       /// Calculate first
       if (actions.length > 1) {
         actions = actions
-            .expand((e) => [
-                  e,
-                  Container(
-                    height: 25,
-                    width: 1,
-                    color: GLAppStyle.instance.currentConfig.separatorColor,
-                  )
-                ])
+            .expand((e) =>
+        [
+          e,
+          Container(
+            height: 25,
+            width: 1,
+            color: GLAppStyle.instance.currentConfig.separatorColor,
+          )
+        ])
             .toList()
-              ..removeLast();
+          ..removeLast();
       }
       actionContainer = Row(
         children: actions,
@@ -232,11 +236,11 @@ class _GLAlertDialogState extends State<GLAlertDialog> with SingleTickerProvider
     );
     var customDialog = widget.tapAnywhereToDismiss
         ? GestureDetector(
-            child: bg,
-            onTap: () {
-              _dismiss(false);
-            },
-          )
+      child: bg,
+      onTap: () {
+        _dismiss(false);
+      },
+    )
         : bg;
 
     return WillPopScope(
