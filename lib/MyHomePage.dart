@@ -12,8 +12,8 @@ import 'TestPage.dart';
 /// Created by GrayLand119
 /// on 2020/12/25
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-  final String title;
+  MyHomePage({Key? key, this.title}) : super(key: key);
+  final String? title;
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -26,8 +26,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return GLHUD(
       onWillPop: () async {
-        if (_hud.currentState.hudState == GLHUDType.dismissed) {
-          _hud.currentState.showMessage(message: '再按一次退出');
+        if (_hud.currentState?.hudState == GLHUDType.dismissed) {
+          _hud.currentState?.showMessage(message: '再按一次退出');
           return false;
         }
         return true;

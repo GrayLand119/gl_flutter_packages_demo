@@ -47,8 +47,6 @@ void styleInit() {
 }
 
 class MyApp extends StatelessWidget {
-  GLAppStyleConfig _yaAppConfig;
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -63,7 +61,7 @@ class MyApp extends StatelessWidget {
         SCREEN_WIDTH = MediaQuery.of(context).size.width;
         SCREEN_HEIGHT = MediaQuery.of(context).size.height;
         PIXEL_RATIO = MediaQuery.of(context).devicePixelRatio;
-        return child;
+        return child ?? Container();
       },
     );
   }

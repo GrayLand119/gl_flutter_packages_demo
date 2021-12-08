@@ -21,34 +21,34 @@ class GLDialogDemo extends StatelessWidget {
         GLCommonCell(
           title: 'AlertDialog - normal',
           onTap: () async {
-            bool _res = await GLAlertDialog.show(context,
+            bool _res = await GLAlertDialog(
                 title: 'Your Title',
                 content: 'Your content blablabla...',
                 cancelTitle: 'Cancel',
-                okTitle: 'Go to Setting');
+                okTitle: 'Go to Setting').show(context);
           },
         ),
         GLCommonCell(
           title: 'AlertDialog - dangerous action style',
           onTap: () async {
-            bool _res = await GLAlertDialog.show(context,
+            bool _res = await GLAlertDialog(
                 title: 'Your Title',
                 content: 'Your content blablabla...',
                 cancelTitle: 'Cancel',
                 okTitle: 'Delete',
-                isDangerousAction: true);
+                isDangerousAction: true).show(context);
           },
         ),
         GLCommonCell(
           title: 'AlertDialog - Vertical action',
           onTap: () async {
-            bool _res = await GLAlertDialog.show(context,
+            bool _res = await GLAlertDialog(
                 title: 'Your Title',
                 content: 'Your content blablabla...',
                 cancelTitle: 'Cancel',
                 okTitle: 'Ignore',
               actionAxis: Axis.vertical,
-            );
+            ).show(context);
           },
         ),
       ],

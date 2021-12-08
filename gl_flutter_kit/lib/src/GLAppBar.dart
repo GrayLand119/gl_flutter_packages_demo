@@ -5,19 +5,17 @@ import 'GLUtils.dart';
 
 import 'GLNavigationItem.dart';
 
-/**
- * Created by GrayLand119
- * on 2020/12/3
- */
+/// Created by GrayLand119
+/// on 2020/12/3
 AppBar GLAppBar(
   BuildContext context, {
-  Widget leading,
+  Widget? leading,
   String title = '',
-  BoolCallback willPopBack,
-  List<GLNavigationItem> rightItems,
-  Color backgroundColor,
+  BoolCallback? willPopBack,
+  List<GLNavigationItem>? rightItems,
+  Color? backgroundColor,
   bool showLeading = true,
-  Key key,
+  Key? key,
 }) {
   /// Navigator.of(context).canPop() some time return true unexspected.
   /// So, add `showLeading` property to manual control leading widget's show/hide.
@@ -30,7 +28,7 @@ AppBar GLAppBar(
             color: Colors.white,
           ),
           onPressed: () async {
-            if (willPopBack == null || (await willPopBack?.call() ?? true)) {
+            if (await willPopBack?.call() ?? true) {
               Navigator.of(context).pop();
             }
           });

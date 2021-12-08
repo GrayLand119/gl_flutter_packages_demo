@@ -14,3 +14,5 @@ double SCALE_WIDTH(width) {
 double SCALE_HEIGHT(height) {
   return height / 667.0 * SCREEN_HEIGHT;
 }
+
+typedef GLVoidCallback = dynamic Function();

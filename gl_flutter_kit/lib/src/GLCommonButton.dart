@@ -1,19 +1,19 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:gl_flutter_kit/gl_flutter_kit.dart';
 import 'GLUtils.dart';
 
-/**
- * Created by GrayLand119
- * on 2020/12/3
- */
+/// Created by GrayLand119
+/// on 2020/12/3
 class GLCommonButton extends StatelessWidget {
-  final String title;
+  final String? title;
   final String style;
   final double height;
   final double width;
 
-  VoidCallback onTap;
+  GLVoidCallback? onTap;
 
   EdgeInsets padding;
 
@@ -28,7 +28,7 @@ class GLCommonButton extends StatelessWidget {
         this.padding = const EdgeInsets.symmetric(horizontal: 45),
         this.onTap,
         this.isRoundRect = true,
-        Key key})
+        Key? key})
       : super(key: key);
 
   bool _tapped = false;
@@ -36,7 +36,7 @@ class GLCommonButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: padding ?? EdgeInsets.zero,
+      padding: padding,
       child: Container(
         height: height,
         width: width,
@@ -46,15 +46,15 @@ class GLCommonButton extends StatelessWidget {
             GLAppStyle.instance.currentConfig.splashColor :
             GLAppStyle.instance.currentConfig.primaryColor,
             borderRadius: isRoundRect ? BorderRadius.circular(height / 2.0) : BorderRadius.zero),
-        child: FlatButton(
+        child: TextButton(
           onPressed: onTap == null ? null : () async {
             if (_tapped) return;
             _tapped = true;
-            await onTap();
+            await onTap?.call();
             _tapped = false;
           },
-          child: GLText(title, style),
-          splashColor: GLAppStyle.instance.currentConfig.separatorColor,
+          child: GLText(title ?? "", style),
+          // splashColor: GLAppStyle.instance.currentConfig.separatorColor,
         ),
       ),
     );

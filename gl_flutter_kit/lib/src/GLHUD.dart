@@ -21,7 +21,7 @@ enum GLHUDType {
 }
 
 class GLHUD extends StatefulWidget {
-  Widget customChild;
+  Widget? customChild;
 
   final Widget child;
   final bool cancelEnable;
@@ -29,15 +29,15 @@ class GLHUD extends StatefulWidget {
   final double pannelHeight;
 
   Duration fadeDuration = const Duration(milliseconds: 200);
-  VoidCallback didDismissed;
-  Color maskColor;
-
+  VoidCallback? didDismissed;
+  Color? maskColor;
+  Color? hudBackgroundColor;
   final GLHUDType initialState;
 
-  WillPopCallback onWillPop;
+  WillPopCallback? onWillPop;
 
   @override
-  static GLHUDState of(BuildContext context) {
+  static GLHUDState? of(BuildContext context) {
     assert(context != null);
     return context.findAncestorStateOfType<GLHUDState>();
   }
@@ -46,55 +46,58 @@ class GLHUD extends StatefulWidget {
   static GlobalKey<GLHUDState> genKey() => GlobalKey<GLHUDState>();
 
   GLHUD({
-    @required this.child,
+    required this.child,
     this.initialState = GLHUDType.dismissed,
     this.cancelEnable = true,
     this.customChild,
     this.maskColor,
+    this.hudBackgroundColor,
     this.onWillPop,
     this.pannelWidth = 140,
     this.pannelHeight = 140,
-    Key key,
+    Key? key,
   }) : super(key: key) {
     if (maskColor == null) {
-      maskColor = Colors.black.withAlpha(100);
+      maskColor = Colors.black.withOpacity(0.4);
+    }
+    if (hudBackgroundColor == null) {
+      hudBackgroundColor = Colors.white;
     }
   }
 
   @override
   GLHUDState createState() {
-    // _curState = _GLHUDState();
     return GLHUDState();
   }
 }
 
 class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
-  GLHUDType _hudState;
+  late GLHUDType _hudState;
 
   /// Default text style is '511', meaning use fotmat like that:
   /// GLAppStyle.instance.currentConfig.fontSizeMap[5]
   /// GLAppStyle.instance.currentConfig.colorsMap[1]
   /// GLAppStyle.instance.currentConfig.fontWeightMap[1]
-  String titleStyle;// Title label style
-  String contentStyle; // Message label style
-  String _title;
-  String _content; // message
-  String _contentLast;
+  late String titleStyle;// Title label style
+  late String contentStyle; // Message label style
+  String? _title;
+  String? _content; // message
+  String? _contentLast;
 
-  Timer _delayHideTimer;
+  Timer? _delayHideTimer;
 
-  Duration _autoHideDuration;
+  Duration? _autoHideDuration;
 
-  VoidCallback _timeOutCallback;
+  VoidCallback? _timeOutCallback;
 
-  Widget _extendWidget;
+  Widget? _extendWidget;
 
   double _extendWidgetHeight = 0.0;
   double _progressValue = 0.0;
-  double _maxWidth;
-  double loadingWidgetWH;
+  late double _maxWidth;
+  late double loadingWidgetWH;
 
-  EdgeInsets padding;
+  EdgeInsets padding = EdgeInsets.zero;
 
   GLHUDType get hudState => _hudState;
 
@@ -107,14 +110,14 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
     }
   }
 
-  bool update;
-  AnimationController _fadeController;
+  bool? update;
+  late AnimationController _fadeController;
 
   // AnimationController _rotateController;
-  Animation _animation;
-  Tween<double> _opacityTween;
+  late Animation _animation;
+  // Tween<double> _opacityTween;
 
-  double _spaceBetweenTitleAndContent;
+  late double _spaceBetweenTitleAndContent;
 
   @override
   void initState() {
@@ -189,7 +192,7 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
   void _dismiss() {
     // _rotateController.stop();
     if (!_fadeController.isDismissed) {
-      _fadeController?.reverse();
+      _fadeController.reverse();
     }
     widget.didDismissed?.call();
   }
@@ -238,7 +241,7 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
         });
   }
 
-  Widget _defaultContainer({Widget child, double exWidth = 0.0, double exHeight = 0.0}) {
+  Widget _defaultContainer({required Widget child, double exWidth = 0.0, double exHeight = 0.0}) {
 
     return Center(
       child: Container(
@@ -246,14 +249,14 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
         width: widget.pannelWidth + exWidth,
         height: widget.pannelHeight + exHeight,
         decoration:
-        BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(8)), color: Colors.white),
+        BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(8)), color: widget.hudBackgroundColor),
         child: child,
       ),
     );
   }
 
-  void showLoading({String title, String message, Duration timeOut = const Duration(
-      seconds: 30), VoidCallback timeOutCallback, Widget extendWidget, double extendWidgetHeight}) {
+  void showLoading({String? title, String? message, Duration timeOut = const Duration(
+      seconds: 30), VoidCallback? timeOutCallback, Widget? extendWidget, double? extendWidgetHeight}) {
     _title = title;
     _content = message;
     _autoHideDuration = timeOut;
@@ -265,7 +268,7 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
     if (_autoHideDuration != null) {
       _delayHideTimer?.cancel();
       // dlog.i('loading: _autoHideDuration: ${_autoHideDuration}');
-      _delayHideTimer = Timer(_autoHideDuration, () {
+      _delayHideTimer = Timer(_autoHideDuration!, () {
         _timeOutCallback?.call();
         // dlog.i('loading: on hide');
         hide();
@@ -273,7 +276,7 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
     }
   }
 
-  void showProgress({String title, String message, double progress}) {
+  void showProgress({String? title, String? message, double progress = 0}) {
     _title = title;
     _content = message;
     _extendWidgetHeight = 0;
@@ -302,19 +305,19 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
     // }
   }
 
-  void showErrorMessage({String message}) {
+  void showErrorMessage({String? message}) {
     // dlog.w('showErrorMessage, $message');
     // TODO: 添加失败图标
     showMessage(title: '出错啦', message: message, duration: Duration(seconds: 3));
   }
 
-  void showSuccessMessage({String message}) {
+  void showSuccessMessage({String? message}) {
     // TODO: 添加成功图标
     showMessage(message: message);
   }
 
   void showMessage(
-      {String title, String message, Duration duration = const Duration(milliseconds: 1200)}) {
+      {String? title, String? message, Duration duration = const Duration(milliseconds: 1200)}) {
     _delayHideTimer?.cancel();
     _title = title;
     _content = message;
@@ -323,14 +326,14 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
 
     // dlog.i('message: _autoHideDuration: ${_autoHideDuration}');
     _delayHideTimer?.cancel();
-    _delayHideTimer = Timer(_autoHideDuration, () {
+    _delayHideTimer = Timer(duration, () {
       // dlog.i('message: on hide');
       hide();
     });
   }
 
-  void showCustom({Widget child, Duration timeOut = const Duration(
-      seconds: 30), VoidCallback timeOutCallback}) {
+  void showCustom({required Widget child, Duration timeOut = const Duration(
+      seconds: 30), VoidCallback? timeOutCallback}) {
     if (child != null) {
       widget.customChild = child;
     }
@@ -342,7 +345,7 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
     if (_autoHideDuration != null) {
       _delayHideTimer?.cancel();
       // dlog.i('loading: _autoHideDuration: ${_autoHideDuration}');
-      _delayHideTimer = Timer(_autoHideDuration, () {
+      _delayHideTimer = Timer(_autoHideDuration!, () {
         _timeOutCallback?.call();
         // dlog.i('loading: on hide');
         hide();
@@ -373,7 +376,7 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
     double calcHeight = padding.vertical;
 
     if (_hasTitle) {
-      Text _t1 = GLText(_title, titleStyle);
+      Text _t1 = GLText(_title ?? "", titleStyle);
       Size _s1 = _t1.layout(maxWidth: _maxWidth, minWidth: minWidth);
 
       calcWidth = max(calcWidth, _s1.width + padding.horizontal);
@@ -383,7 +386,7 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
     }
 
     if (_hasContent) {
-      Text _t1 = GLText(_content, contentStyle, textAlign: TextAlign.center);
+      Text _t1 = GLText(_content ?? "", contentStyle, textAlign: TextAlign.center);
       Size _s1 = _t1.layout(maxWidth: _maxWidth, minWidth: minWidth);
 
       calcWidth = max(calcWidth, _s1.width + padding.horizontal);
@@ -424,7 +427,7 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
     double _exW = widget.pannelWidth;
 
     if (_hasTitle) {
-      Text _t1 = GLText(_title, titleStyle);
+      Text _t1 = GLText(_title ?? "", titleStyle);
       Size _s1 = _t1.layout(maxWidth: _maxWidth);
 
       _exH += _s1.height + 16.0;
@@ -442,7 +445,7 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
     _cols.add(SizedBox(width: loadingWidgetWH,height: loadingWidgetWH, child: _spin));
 
     if (_hasContent) {
-      Text _t1 = GLText(_content, contentStyle, textAlign: TextAlign.center);
+      Text _t1 = GLText(_content ?? "", contentStyle, textAlign: TextAlign.center);
       Size _s1 = _t1.layout(maxWidth: _maxWidth);
 
       _exW = max(_s1.width + padding.horizontal, _exW);
@@ -473,11 +476,11 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
   }
 
   @override
-  Widget loadingSpinWidget({double size}) {
+  Widget loadingSpinWidget({double? size}) {
     return SpinKitWave(
       color: GLAppStyle.instance.currentConfig.primaryColor,
       itemCount: 12,
-      size: size != null ? size : loadingWidgetWH,
+      size: size ?? loadingWidgetWH,
     );
   }
 
@@ -502,7 +505,7 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
     }
 
     if (_hasTitle) {
-      Text _t1 = GLText(_title, titleStyle);
+      Text _t1 = GLText(_title ?? "", titleStyle);
       Size _s1 = _t1.layout(maxWidth: _maxWidth);
 
       _exH += _s1.height + 16;
@@ -518,7 +521,7 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
     _exH += _tLoadingWH;
 
     if (_hasContent) {
-      Text _t1 = GLText(_content, contentStyle, textAlign: TextAlign.center);
+      Text _t1 = GLText(_content ?? "", contentStyle, textAlign: TextAlign.center);
       Size _s1 = _t1.layout(maxWidth: _maxWidth);
 
       _exH += _s1.height + 16;

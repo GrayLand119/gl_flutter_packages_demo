@@ -5,11 +5,11 @@ import 'package:gl_flutter_kit/gl_flutter_kit.dart';
 /// Created by GrayLand119
 /// on 2020/12/25
 class TestPage extends StatefulWidget {
-  String title;
+  String? title;
 
-  String content;
+  String? content;
 
-  TestPage({this.title, this.content, Key key}) : super(key: key);
+  TestPage({this.title, this.content, Key? key}) : super(key: key);
 
   @override
   _TestPageState createState() => _TestPageState();

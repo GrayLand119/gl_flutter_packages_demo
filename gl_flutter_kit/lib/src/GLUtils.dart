@@ -32,13 +32,13 @@ const double kDefaultPaddingHorizontal = 16.0;
 class GLAsyncResult<T> {
   final bool isSuccessful;
 
-  final T result;
+  final T? result;
   final int errorCode;
   final String errorDesc;
 
   final dynamic extra;
 
-  GLAsyncResult(this.isSuccessful, {this.result, this.errorCode, this.errorDesc, this.extra});
+  GLAsyncResult(this.isSuccessful, {this.result, this.errorCode = 0, this.errorDesc = '', this.extra});
 
   static failedWith(GLAsyncResult res) {
     return GLAsyncResult(false, errorDesc: res.errorDesc, errorCode: res.errorCode, result: null);
@@ -51,7 +51,7 @@ class GLAsyncResult<T> {
 }
 
 /// Style format: 大小-颜色-字体. e.g "321"
-TextStyle GLTextStyle(String style) {
+TextStyle GLTextStyle(String style, {Color? fontColor}) {
   assert(style.length >= 3);
   var _config = GLAppStyle.instance.currentConfig;
   int iFontSize;
@@ -69,9 +69,9 @@ TextStyle GLTextStyle(String style) {
   }
 
   return TextStyle(
-    fontSize: _config.fontSizeMap[iFontSize] / 2,
+    fontSize: (_config.fontSizeMap[iFontSize] ?? 26) / 2,
     //1.3281472327365
-    color: _config.colorsMap[iColor],
+    color: fontColor != null ? fontColor : _config.colorsMap[iColor],
     fontFamily: _config.fontFamilyName,
     fontStyle: FontStyle.normal,
     fontWeight: _config.fontWeightMap[iFontWeight],
@@ -81,12 +81,12 @@ TextStyle GLTextStyle(String style) {
 
 Text GLText(String text, String style,
     {TextAlign textAlign = TextAlign.start,
-    int maxLines,
-    bool softWrap,
+    int? maxLines,
+    bool? softWrap, Color? fontColor,
     TextOverflow overflow = TextOverflow.visible}) {
   return Text(
     text,
-    style: GLTextStyle(style),
+    style: GLTextStyle(style, fontColor: fontColor),
     textAlign: textAlign,
     maxLines: maxLines,
     overflow: overflow,
@@ -132,9 +132,9 @@ class GLImage {
     String name, {
     String base = GL_ICON_BASE,
     String extension = GL_SVG_EXTENSION,
-    double width,
-    double height,
-    Color color,
+    double? width,
+    double? height,
+    Color? color,
     BoxFit fit = BoxFit.contain,
     BlendMode colorBlendMode = BlendMode.srcIn,
   }) {
@@ -150,11 +150,11 @@ class GLImage {
 
   /// imgUrl can be a local file path.
   static netImage(
-      {@required String imgUrl,
-      double width,
-      double height,
+      {required String imgUrl,
+      double? width,
+      double? height,
       BoxFit fit = BoxFit.cover,
-      Widget placeholder,
+      Widget? placeholder,
       // VoidCallback completion,
       }) {
     if (imgUrl.startsWith('/')) {
@@ -177,7 +177,7 @@ class GLImage {
       width: width,
       height: height,
       placeholder: (ctx, url) {
-        return placeholder;
+        return placeholder!;
       },
       // imageBuilder: (ctx, imgProvider) {
       //   print('aAAAAAA: imgProvider: $imgProvider');
@@ -200,9 +200,10 @@ class GLImage {
     String name, {
     String base = GL_IMAGE_BASE,
     String extension = GL_PNG_EXTENSION,
-    double width,
-    double height,
-    Color color,
+    double? width,
+    double? height,
+    Color? color,
+    String? package,
     BoxFit fit = BoxFit.contain,
     BlendMode colorBlendMode = BlendMode.srcIn,
   }) {
@@ -211,13 +212,14 @@ class GLImage {
       width: width,
       height: height,
       color: color,
+      package: package,
       colorBlendMode: colorBlendMode,
       fit: fit,
     );
   }
 }
 
-Widget GLImageButton({Widget image, Widget title, VoidCallback onTap}) {
+Widget GLImageButton({required Widget image, Widget? title, GLVoidCallback? onTap}) {
   if (title != null) {
     return GLTapped(
       onTap: onTap,

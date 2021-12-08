@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 
+import 'GLMarco.dart';
 import 'GLTapped.dart';
 
 /// Created by GrayLand119
 /// on 2020/12/15
 class GLPolygenButton extends StatelessWidget {
-  final Widget child;
-  final Path maskPath;
+  final Widget? child;
+  final Path? maskPath;
 
-  VoidCallback onTap;
+  GLVoidCallback? onTap;
 
   final Color maskColor;
 
-  GLPolygenButton({this.child, this.maskPath, this.maskColor, this.onTap, Key key})
+  GLPolygenButton({this.child, this.maskPath, this.maskColor = Colors.black87, this.onTap, Key? key})
       : super(key: key);
 
   @override
@@ -37,14 +38,11 @@ class GLPolygenButton extends StatelessWidget {
 }
 
 class GLPolygenPainter extends CustomPainter {
-  Path maskPath;
+  Path? maskPath;
 
   Color maskColor;
 
-  GLPolygenPainter({this.maskPath, this.maskColor}) {
-    if (maskColor == null) {
-      maskColor = Colors.black87;
-    }
+  GLPolygenPainter({this.maskPath, this.maskColor = Colors.black87}) {
   }
 
   @override
@@ -54,17 +52,17 @@ class GLPolygenPainter extends CustomPainter {
       final double _halfW = size.width / 2.0;
       final double _halfH = size.height / 2.0;
       final double _arrowR = 5.0;
-      maskPath.moveTo(0, 0);
-      maskPath.lineTo(_halfW, 0);
-      maskPath.lineTo(_halfW, _halfH - _arrowR);
-      maskPath.lineTo(_halfW + _arrowR, _halfH);
-      maskPath.lineTo(_halfW, _halfH + _arrowR);
-      maskPath.lineTo(_halfW, size.height);
-      maskPath.lineTo(0, size.height);
-      maskPath.close();
+      maskPath!.moveTo(0, 0);
+      maskPath!.lineTo(_halfW, 0);
+      maskPath!.lineTo(_halfW, _halfH - _arrowR);
+      maskPath!.lineTo(_halfW + _arrowR, _halfH);
+      maskPath!.lineTo(_halfW, _halfH + _arrowR);
+      maskPath!.lineTo(_halfW, size.height);
+      maskPath!.lineTo(0, size.height);
+      maskPath!.close();
     }
     canvas.drawPath(
-        maskPath,
+        maskPath!,
         Paint()
           ..style = PaintingStyle.fill
           ..color = maskColor);
@@ -72,7 +70,7 @@ class GLPolygenPainter extends CustomPainter {
 
   @override
   bool hitTest(Offset position) {
-    return maskPath.contains(position);
+    return maskPath?.contains(position) ?? false;
     // return super.hitTest(position);
   }
 

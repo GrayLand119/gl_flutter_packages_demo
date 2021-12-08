@@ -1,9 +1,7 @@
 part of 'package:gl_flutter_kit/gl_flutter_kit.dart';
 
-/**
- * Created by GrayLand119
- * on 2020/12/2
- */
+/// Created by GrayLand119
+/// on 2020/12/2
 // class GLImage extends SvgPicture {
 //   GLImage.asset(String assetName) : super.asset(assetName);
 // }
@@ -16,7 +14,7 @@ part of 'package:gl_flutter_kit/gl_flutter_kit.dart';
 // ..layout())
 // .size;
 extension GLTextSize on Text {
-  static Size _size;
+  static Size _size = Size.zero;
 
   Size layout({double minWidth = 0.0, double maxWidth = double.maxFinite}) {
     TextPainter _p = TextPainter(
@@ -33,24 +31,24 @@ extension GLTextSize on Text {
 
 extension GLString on String {
   double toDouble() {
-    return double.parse(this) ?? 0.0;
+    return double.parse(this);
   }
   int toInt() {
-    return int.parse(this) ?? 0;
+    return int.parse(this);
   }
 }
 
 extension GLDynamic on dynamic {
   double toDouble() {
     // print ('GLDynamic toDouble call!');
-    if (this is String) return double.parse(this) ?? 0.0;
+    if (this is String) return double.parse(this);
     if (this is double) return this;
     if (this is int) return this.toDouble();
     return 0.0;
   }
 
   int toInt() {
-    if (this is String) return int.parse(this) ?? 0;
+    if (this is String) return int.parse(this);
     if (this is double) return this.toInt();
     if (this is int) return this;
     return 0;

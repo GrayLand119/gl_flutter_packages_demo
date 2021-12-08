@@ -44,7 +44,12 @@ class GLUIComponents extends StatelessWidget {
         child: GLCircleAvatar(imageUrl: 'https://box.bdimg.com/static/fisp_static/common/img/searchbox/logo_news_276_88_1f9876a.png',
           borderWidth: 2, width: 44, height: 44,),
       ),
+      GLDemoCell(
+        title: 'GLImageButton',
+        child: GLImage.localAsset("avatar", package: "gl_flutter_kit", width: 44, height: 44, extension: "png"),
+      ),
     ].expand((element) => [element, Divider()]).toList();
+
   }
 
   Widget _tapped() {
@@ -79,11 +84,11 @@ class GLUIComponents extends StatelessWidget {
 }
 
 class GLDemoCell extends StatelessWidget {
-  String title;
+  String? title;
 
   Widget child;
 
-  GLDemoCell({this.title, this.child, Key key}) : super(key: key);
+  GLDemoCell({this.title, required this.child, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:gl_flutter_kit/gl_flutter_kit.dart';
 
 class GLTapped extends StatefulWidget {
-  GLTapped({this.child, this.onTap, this.onLongTap, this.onTapParent, this.behavior});
-  final HitTestBehavior behavior;
+  GLTapped({required this.child, this.onTap, this.onLongTap, this.onTapParent, this.behavior});
+  final HitTestBehavior? behavior;
   final Widget child;
-  final Function onTap;
-  final Function(Widget w) onTapParent;
-  final Function onLongTap;
+  final GLVoidCallback? onTap;
+  final Function(Widget w)? onTapParent;
+  final GLVoidCallback? onLongTap;
 
   @override
   _GLTappedState createState() => _GLTappedState();
@@ -15,8 +16,8 @@ class GLTapped extends StatefulWidget {
 class _GLTappedState extends State<GLTapped> with SingleTickerProviderStateMixin {
   bool _isChangeAlpha = false;
 
-  AnimationController _controller;
-  Animation _animation;
+  late AnimationController _controller;
+  late Animation _animation;
 
   Duration _tapInterval = const Duration(milliseconds: 200);
 
@@ -37,7 +38,7 @@ class _GLTappedState extends State<GLTapped> with SingleTickerProviderStateMixin
 
   @override
   void dispose() {
-    _controller?.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -53,9 +54,9 @@ class _GLTappedState extends State<GLTapped> with SingleTickerProviderStateMixin
         if (_isTapped) return;
         _isTapped = true;
         if (widget.onTapParent != null) {
-          widget.onTapParent.call(widget);
+          widget.onTapParent!.call(widget);
         }else {
-          widget.onTap?.call();
+          await widget.onTap?.call();
         }
         await Future.delayed(_tapInterval);
         _isTapped = false;
@@ -64,7 +65,7 @@ class _GLTappedState extends State<GLTapped> with SingleTickerProviderStateMixin
           ? null
           : () async {
               await Future.delayed(Duration(milliseconds: 100));
-              widget.onLongTap();
+              widget.onLongTap?.call();
             },
       onTapDown: (detail) async {
         _tapDown = true;

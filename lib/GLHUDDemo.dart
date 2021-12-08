@@ -30,9 +30,9 @@ class _GLHUDDemoState extends State<GLHUDDemo> {
                 title: 'Show Loading HUD',
                 desc: 'Loading only',
                 onTap: () {
-                  _hud.currentState.showLoading();
+                  _hud.currentState?.showLoading();
                   Future.delayed(Duration(seconds: 2), () {
-                    _hud.currentState.hide();
+                    _hud.currentState?.hide();
                   });
                 },
               ),
@@ -40,9 +40,9 @@ class _GLHUDDemoState extends State<GLHUDDemo> {
                 title: 'Show Loading HUD',
                 desc: 'With title',
                 onTap: () {
-                  _hud.currentState.showLoading(title: 'Title');
+                  _hud.currentState?.showLoading(title: 'Title');
                   Future.delayed(Duration(seconds: 2), () {
-                    _hud.currentState.hide();
+                    _hud.currentState?.hide();
                   });
                 },
               ),
@@ -50,9 +50,9 @@ class _GLHUDDemoState extends State<GLHUDDemo> {
                 title: 'Show Loading HUD',
                 desc: 'With title and messagae',
                 onTap: () {
-                  _hud.currentState.showLoading(title: 'Title', message: 'Loading message');
+                  _hud.currentState?.showLoading(title: 'Title', message: 'Loading message');
                   Future.delayed(Duration(seconds: 2), () {
-                    _hud.currentState.hide();
+                    _hud.currentState?.hide();
                   });
                 },
               ),
@@ -60,13 +60,13 @@ class _GLHUDDemoState extends State<GLHUDDemo> {
                 title: 'Show Loading HUD',
                 desc: 'With extend widget',
                 onTap: () {
-                  _hud.currentState.showLoading(title: 'Title',
+                  _hud.currentState?.showLoading(title: 'Title',
                       // message: 'Loading message',
                       extendWidgetHeight: 40, extendWidget: CupertinoButton(child: GLText('Stop Request', '651', textAlign: TextAlign.center), onPressed: () {
-                        _hud.currentState.hide();
+                        _hud.currentState?.hide();
                       }));
                   Future.delayed(Duration(seconds: 50), () {
-                    _hud.currentState.hide();
+                    _hud.currentState?.hide();
                   });
                 },
               ),
@@ -74,24 +74,24 @@ class _GLHUDDemoState extends State<GLHUDDemo> {
                 title: 'Show messagae HUD',
                 desc: 'message only',
                 onTap: () {
-                  // _hud.currentState.showMessage(message: 'This is a message.');
-                  _hud.currentState.showMessage(message: 'message.');
+                  // _hud.currentState?.showMessage(message: 'This is a message.');
+                  _hud.currentState?.showMessage(message: 'message.');
                 },
               ),
               GLCommonCell(
                 title: 'Show messagae HUD',
                 desc: 'title and message',
                 onTap: () {
-                  _hud.currentState.showMessage(title: 'Title', message: 'This is a message.');
+                  _hud.currentState?.showMessage(title: 'Title', message: 'This is a message.');
                 },
               ),
               GLCommonCell(
                 title: 'Show Loading, then show message',
                 desc: '',
                 onTap: () async {
-                  _hud.currentState.showLoading();
+                  _hud.currentState?.showLoading();
                   await Future.delayed(Duration(seconds: 1));
-                  _hud.currentState.showMessage(
+                  _hud.currentState?.showMessage(
                       message: 'Show message after showLoading, GLHUD will auto hide.');
                 },
               ),
@@ -103,13 +103,13 @@ class _GLHUDDemoState extends State<GLHUDDemo> {
                   double i = 0;
                   Timer.periodic(Duration(milliseconds: 100), (timer) {
                     i += 0.05;
-                    _hud.currentState.showProgress(
+                    _hud.currentState?.showProgress(
                         title: 'OTA',
                         message: 'OTA progress ${(i * 100).toInt()}%',
                         progress: i);
                     if (i >= 1.0) {
                       timer.cancel();
-                      _hud.currentState.hide();
+                      _hud.currentState?.hide();
                     }
                   });
 
@@ -119,22 +119,22 @@ class _GLHUDDemoState extends State<GLHUDDemo> {
                 title: 'Show Success',
                 desc: 'TODO: show success icon',
                 onTap: () async {
-                  _hud.currentState.showSuccessMessage(message: 'Success');
+                  _hud.currentState?.showSuccessMessage(message: 'Success');
                 },
               ),
               GLCommonCell(
                 title: 'Show Error',
                 desc: 'TODO: show failed icon',
                 onTap: () async {
-                  _hud.currentState.showErrorMessage(message: 'Error');
+                  _hud.currentState?.showErrorMessage(message: 'Error');
                 },
               ),
               GLCommonCell(
                 title: 'Show Custom',
                 desc: '',
                 onTap: () async {
-                  // _hud.currentState.showCustom();
-                  _hud.currentState.showCustom(
+                  // _hud.currentState?.showCustom();
+                  _hud.currentState?.showCustom(
                       child: Container(
                     width: 120,
                     height: 120,
@@ -147,7 +147,7 @@ class _GLHUDDemoState extends State<GLHUDDemo> {
                     ),
                   ));
                   await Future.delayed(Duration(seconds: 5));
-                  _hud.currentState.hide();
+                  _hud.currentState?.hide();
                 },
               ),
             ],

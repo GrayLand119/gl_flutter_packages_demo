@@ -9,11 +9,11 @@ class GLAppStyleConfig {
   Color sessionColor = Color(0x3FEDECE8);
   Color backgroundColor = Color(0xFFEBECED);
   Color primaryColor = Color(0xFF69C9C6);
-  Map<int, Color> colorsMap;
+  Map<int, Color> colorsMap = {};
 
   int defaultColorValue = 0xFF69C9C6;
   Color defaultAppColor = Color(0xFF69C9C6);
-  MaterialColor defaultAppColors;
+  MaterialColor? defaultAppColors;
 
   Map<int, double> fontSizeMap = <int, double>{
     1: 120.0,
@@ -71,7 +71,7 @@ class GLAppStyle {
 
   GLAppStyle._();
 
-  GLAppStyleConfig _currentConfig;
+  GLAppStyleConfig _currentConfig = GLAppStyleConfig();
 
   GLAppStyleConfig get currentConfig => _currentConfig;
 

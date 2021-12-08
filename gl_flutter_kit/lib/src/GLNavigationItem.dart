@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'GLMarco.dart';
 import 'GLUtils.dart';
 
 /**
@@ -8,12 +9,12 @@ import 'GLUtils.dart';
  * on 2020/12/3
  */
 class GLNavigationItem extends StatelessWidget {
-  final Color color;
+  final Color? color;
   final double width;
   final Widget child;
-  final VoidCallback onPressed;
+  final GLVoidCallback? onPressed;
 
-  GLNavigationItem({this.color, this.width = 44.0, this.child, this.onPressed, Key key})
+  GLNavigationItem({this.color, this.width = 44.0, required this.child, this.onPressed, Key? key})
       : super(key: key);
 
   bool _tapped = false;
@@ -26,7 +27,7 @@ class GLNavigationItem extends StatelessWidget {
           padding: EdgeInsets.symmetric(vertical: 14), child: child, onPressed: onPressed == null ? null : () async {
         if (_tapped) return;
         _tapped = true;
-        onPressed();
+        await onPressed?.call();
         await Future.delayed(Duration(milliseconds: 100));
         _tapped = false;
       }),

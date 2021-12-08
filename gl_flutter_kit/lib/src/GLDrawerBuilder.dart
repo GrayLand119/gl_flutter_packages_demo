@@ -10,10 +10,10 @@ class GLDrawerBuilder<T> extends PageRouteBuilder<T> {
 
   Color backgroundColor;
 
-  BoolCallback willPopBack;
+  BoolCallback? willPopBack;
 
   GLDrawerBuilder({
-    this.child,
+    required this.child,
     this.widthFactor = 0.7,
     this.backgroundColor = Colors.black54,
     this.willPopBack,
@@ -37,12 +37,8 @@ class GLDrawerBuilder<T> extends PageRouteBuilder<T> {
                     color: backgroundColor,
                   ),
                   onTap: () async {
-                    if (willPopBack != null) {
-                      bool res = await willPopBack.call();
-                      if (res) {
-                        Navigator.pop(context);
-                      }
-                    }else {
+                    bool res = await willPopBack?.call() ?? true;
+                    if (res) {
                       Navigator.pop(context);
                     }
                   },

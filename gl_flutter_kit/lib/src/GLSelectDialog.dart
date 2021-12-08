@@ -8,12 +8,12 @@ import 'GLUtils.dart';
 /// Created by GrayLand119
 /// on 2020/12/28
 class GLSelectDialog extends StatefulWidget {
-  final String title;
-  final String content;
-  final String cancelTitle;
-  final Color maskColor;
+  final String? title;
+  final String? content;
+  final String? cancelTitle;
+  final Color? maskColor;
   final bool tapAnywhereToDismiss;
-  final List<String> selectionItems;
+  final List<String>? selectionItems;
 
   @override
   _State createState() => _State();
@@ -25,35 +25,36 @@ class GLSelectDialog extends StatefulWidget {
       this.cancelTitle,
       this.maskColor,
       this.tapAnywhereToDismiss = false,
-      Key key})
+      Key? key})
       : super(key: key);
 
   static Future<dynamic> show(BuildContext context,
-      {String title,
-      String content,
-      String cancelTitle,
-      List<String> selectionItems,
+      {String? title,
+      String? content,
+      String? cancelTitle,
+      List<String>? selectionItems,
       Color maskColor = const Color(0x4DAEAE),
       bool tapAnywhereToDismiss = false}) async {
     return await showDialog(
             context: context,
-            child: GLSelectDialog(
-              title: title,
-              content: content,
-              cancelTitle: cancelTitle,
-              maskColor: maskColor,
-              tapAnywhereToDismiss: tapAnywhereToDismiss,
-              selectionItems: selectionItems,
-            )) ??
+      builder: (BuildContext context) => GLSelectDialog(
+        title: title,
+        content: content,
+        cancelTitle: cancelTitle,
+        maskColor: maskColor,
+        tapAnywhereToDismiss: tapAnywhereToDismiss,
+        selectionItems: selectionItems,
+      )
+            ) ??
         false;
   }
 }
 
 class _State extends State<GLSelectDialog> with SingleTickerProviderStateMixin {
-  AnimationController _springController;
-  Animation _springAnimation;
-  SpringDescription _springDescription;
-  SpringSimulation _springSimulation;
+  late AnimationController _springController;
+  late Animation _springAnimation;
+  late SpringDescription _springDescription;
+  late SpringSimulation _springSimulation;
   double endAlignY = -0.1;
 
   @override
@@ -83,11 +84,11 @@ class _State extends State<GLSelectDialog> with SingleTickerProviderStateMixin {
 
     var elements = <Widget>[];
 
-    String title = widget.title;
+    String title = widget.title ?? "";
     double totalH = 0.0;
     double maxWidth = SCALE_WIDTH(277);
     var titleWidget;
-    if ((title?.length ?? 0) > 0) {
+    if ((title.length) > 0) {
       totalH += 46;
       titleWidget = Container(
         child: SizedBox(
@@ -100,9 +101,9 @@ class _State extends State<GLSelectDialog> with SingleTickerProviderStateMixin {
       elements.add(titleWidget);
     }
 
-    String content = widget.content;
+    String content = widget.content ?? "";
     var contentWidget;
-    if ((content?.length ?? 0) > 0) {
+    if (content.length > 0) {
       var tP = TextPainter(
           text: GLTextSpan(content, '612'), maxLines: 6, textDirection: TextDirection.ltr)
         ..layout(maxWidth: maxWidth - 24);
@@ -120,7 +121,7 @@ class _State extends State<GLSelectDialog> with SingleTickerProviderStateMixin {
     Widget actionContainer;
     double cH = 0.0;
 
-    for (String item in widget.selectionItems) {
+    for (String item in widget.selectionItems ?? []) {
       actions.add(SizedBox(
         height: 40,
           child: GLTapped(onTap: () {
@@ -132,12 +133,13 @@ class _State extends State<GLSelectDialog> with SingleTickerProviderStateMixin {
 
 
     // Cancel action
-    if (widget?.cancelTitle?.isNotEmpty ?? false) {
+    if (widget.cancelTitle?.isNotEmpty ?? false) {
       actions.add(Expanded(
-          child: FlatButton(
+          child: TextButton(
             onPressed: () => _dismiss(-1),
-            child: GLText(widget.cancelTitle, '552'),
-            height: 50,
+            child: GLText(widget.cancelTitle ?? "Cancel", '552'),
+            style: TextButton.styleFrom(minimumSize: Size(0, 50)),
+            // height: 50,
           )));
       cH = actions.length * 50.0;
     }else{
@@ -232,6 +234,6 @@ class _State extends State<GLSelectDialog> with SingleTickerProviderStateMixin {
   }
 
   _onSelectItem(String item) {
-    _dismiss(widget.selectionItems.indexOf(item));
+    _dismiss(widget.selectionItems?.indexOf(item));
   }
 }

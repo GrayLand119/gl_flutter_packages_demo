@@ -10,20 +10,20 @@ import 'package:gl_flutter_kit/src/GLUtils.dart';
  * on 2020/12/3
  */
 class GLCircleAvatar extends StatelessWidget {
-  final String imageUrl;
+  final String? imageUrl;
 
   final double borderWidth;
   final double radius;
 
-  PlaceholderWidgetBuilder placeHolder;
+  PlaceholderWidgetBuilder? placeHolder;
 
-  final Widget image;
+  final Widget? image;
 
   final BoxFit fit;
 
-  final double width;
+  final double? width;
 
-  final double height;
+  final double? height;
 
   GLCircleAvatar(
       {this.imageUrl,
@@ -34,7 +34,7 @@ class GLCircleAvatar extends StatelessWidget {
       this.height,
       this.placeHolder,
       this.fit = BoxFit.cover,
-      Key key})
+      Key? key})
       : super(key: key);
 
   @override
@@ -52,7 +52,7 @@ class GLCircleAvatar extends StatelessWidget {
     if (imageUrl != null) {
       _avatar = CachedNetworkImage(
         fit: fit,
-        imageUrl: imageUrl,
+        imageUrl: imageUrl!,
         placeholder: placeHolder,
       );
     } else if (image != null) {
