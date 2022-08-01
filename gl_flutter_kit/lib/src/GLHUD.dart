@@ -27,6 +27,8 @@ class GLHUD extends StatefulWidget {
   final bool cancelEnable;
   final double pannelWidth;
   final double pannelHeight;
+  final String titleStyle;
+  final String contentStyle;
 
   Duration fadeDuration = const Duration(milliseconds: 200);
   VoidCallback? didDismissed;
@@ -55,6 +57,8 @@ class GLHUD extends StatefulWidget {
     this.onWillPop,
     this.pannelWidth = 140,
     this.pannelHeight = 140,
+    this.titleStyle = '512',
+    this.contentStyle = '623',
     Key? key,
   }) : super(key: key) {
     if (maskColor == null) {
@@ -67,7 +71,7 @@ class GLHUD extends StatefulWidget {
 
   @override
   GLHUDState createState() {
-    return GLHUDState();
+    return GLHUDState(titleStyle: titleStyle, contentStyle: contentStyle);
   }
 }
 
@@ -78,8 +82,8 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
   /// GLAppStyle.instance.currentConfig.fontSizeMap[5]
   /// GLAppStyle.instance.currentConfig.colorsMap[1]
   /// GLAppStyle.instance.currentConfig.fontWeightMap[1]
-  late String titleStyle;// Title label style
-  late String contentStyle; // Message label style
+  String titleStyle;// Title label style
+  String contentStyle; // Message label style
   String? _title;
   String? _content; // message
   String? _contentLast;
@@ -119,10 +123,12 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
 
   late double _spaceBetweenTitleAndContent;
 
+  GLHUDState({required this.titleStyle, required this.contentStyle});
+
   @override
   void initState() {
-    titleStyle = '411';
-    contentStyle = '521';
+    // titleStyle = '512';
+    // contentStyle = '623';
 
     padding = const EdgeInsets.all(16.0);
     _spaceBetweenTitleAndContent = 12.0;

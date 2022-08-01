@@ -51,6 +51,7 @@ class GLCommonButton extends StatelessWidget {
             if (_tapped) return;
             _tapped = true;
             await onTap?.call();
+            await Future.delayed(const Duration(milliseconds: 100));
             _tapped = false;
           },
           child: GLText(title ?? "", style),

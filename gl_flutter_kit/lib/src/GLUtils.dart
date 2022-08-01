@@ -128,7 +128,7 @@ const String GL_PNG_EXTENSION = "png";
 Widget GLLoadingCircle() => SpinKitFadingCircle(size: 25, color: GLAppStyle.instance.currentConfig.primaryColor);
 
 class GLImage {
-  static svgAsset(
+   static Widget svgAsset(
     String name, {
     String base = GL_ICON_BASE,
     String extension = GL_SVG_EXTENSION,
@@ -138,18 +138,22 @@ class GLImage {
     BoxFit fit = BoxFit.contain,
     BlendMode colorBlendMode = BlendMode.srcIn,
   }) {
-    return SvgPicture.asset(
-      "$base$name.$extension",
-      width: width,
-      height: height,
-      color: color,
-      colorBlendMode: colorBlendMode,
-      fit: fit,
-    );
+     try {
+       return SvgPicture.asset(
+         "$base$name.$extension",
+         width: width,
+         height: height,
+         color: color,
+         colorBlendMode: colorBlendMode,
+         fit: fit,
+       );
+     }catch (e ) {
+       return Icon(Icons.adjust);
+     }
   }
 
   /// imgUrl can be a local file path.
-  static netImage(
+  static Widget netImage(
       {required String imgUrl,
       double? width,
       double? height,
@@ -196,7 +200,7 @@ class GLImage {
     );
   }
 
-  static localAsset(
+  static Widget localAsset(
     String name, {
     String base = GL_IMAGE_BASE,
     String extension = GL_PNG_EXTENSION,
