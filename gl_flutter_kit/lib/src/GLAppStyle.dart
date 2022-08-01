@@ -32,11 +32,11 @@ class GLAppStyleConfig {
 
   GLAppStyleConfig() {
     colorsMap = <int, Color>{
-      1: Color(0xFF282828),
-      2: Color(0xFF818181),
-      3: Color(0xFFB4B4B4),
-      4: Colors.white,
-      5: primaryColor,
+      1: Color(0xFF282828),// 1-Title
+      2: Color(0xFF818181),// 2-Content 1
+      3: Color(0xFFB4B4B4),// 3-Content 2
+      4: Colors.white,// 4-Background
+      5: primaryColor,// 5-PrimaryColor
       6: Color(0xFFF38F1C),
       7: Colors.lightBlue,
       0: Color(0xFFF4511E),

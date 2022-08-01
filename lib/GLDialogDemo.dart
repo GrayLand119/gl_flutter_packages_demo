@@ -51,6 +51,19 @@ class GLDialogDemo extends StatelessWidget {
             ).show(context);
           },
         ),
+        GLCommonCell(
+          title: 'GLSelectDialog',
+          onTap: () async {
+            var _res = await GLSelectDialog(
+                title: 'Your Title',
+                content: 'Your content blablabla...',
+                cancelTitle: 'Cancel',
+              selectionItems: ['item0', 'item1'],
+              tapAnywhereToDismiss: true,
+            ).show(context);
+            print('tapped index: $_res');
+          },
+        ),
       ],
     );
   }

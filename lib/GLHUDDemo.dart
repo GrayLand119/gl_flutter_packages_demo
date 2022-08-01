@@ -27,6 +27,16 @@ class _GLHUDDemoState extends State<GLHUDDemo> {
             physics: AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
             children: [
               GLCommonCell(
+                title: 'Show HUD',
+                desc: 'With cancel button',
+                onTap: () {
+                  _hud.currentState?.showLoading(onCancel: () {});
+                  Future.delayed(Duration(seconds: 10), () {
+                    _hud.currentState?.hide();
+                  });
+                },
+              ),
+              GLCommonCell(
                 title: 'Show Loading HUD',
                 desc: 'Loading only',
                 onTap: () {

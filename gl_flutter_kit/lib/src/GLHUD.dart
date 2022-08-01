@@ -82,7 +82,7 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
   /// GLAppStyle.instance.currentConfig.fontSizeMap[5]
   /// GLAppStyle.instance.currentConfig.colorsMap[1]
   /// GLAppStyle.instance.currentConfig.fontWeightMap[1]
-  String titleStyle;// Title label style
+  String titleStyle; // Title label style
   String contentStyle; // Message label style
   String? _title;
   String? _content; // message
@@ -93,6 +93,7 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
   Duration? _autoHideDuration;
 
   VoidCallback? _timeOutCallback;
+  VoidCallback? _onCancel;
 
   Widget? _extendWidget;
 
@@ -119,6 +120,7 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
 
   // AnimationController _rotateController;
   late Animation _animation;
+
   // Tween<double> _opacityTween;
 
   late double _spaceBetweenTitleAndContent;
@@ -132,14 +134,15 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
 
     padding = const EdgeInsets.all(16.0);
     _spaceBetweenTitleAndContent = 12.0;
-     _maxWidth = SCREEN_WIDTH - 100;
+    _maxWidth = SCREEN_WIDTH - 100;
     loadingWidgetWH = 50.0;
 
     _hudState = widget.initialState;
 
     super.initState();
 
-    _fadeController = AnimationController(duration: widget.fadeDuration, vsync: this);
+    _fadeController =
+        AnimationController(duration: widget.fadeDuration, vsync: this);
     _animation = Tween(begin: 0.0, end: 1.0).animate(_fadeController);
   }
 
@@ -157,6 +160,7 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
         children: [
           widget.child,
           _hud(),
+          // _cancelWidget()
         ],
       ),
     );
@@ -181,7 +185,6 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
     //     child: _child,
     //   );
     // }
-
   }
 
   void _show() {
@@ -201,6 +204,19 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
       _fadeController.reverse();
     }
     widget.didDismissed?.call();
+  }
+
+  Widget _cancelWidget() {
+    return IconButton(
+      iconSize: 20,
+      icon: Icon(Icons.close),
+      onPressed: () => {print("on press cancel button")},
+    );
+    // return Container(
+    //   width: 20,
+    //   height: 20,
+    //   color: Colors.red,
+    // );
   }
 
   Widget _hud() {
@@ -247,22 +263,57 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
         });
   }
 
-  Widget _defaultContainer({required Widget child, double exWidth = 0.0, double exHeight = 0.0}) {
-
+  Widget _defaultContainer(
+      {required Widget child, double exWidth = 0.0, double exHeight = 0.0}) {
+    // Stack(children: [
+    //   ,
+    //   Align(child: _cancelWidget(), alignment: Alignment.topRight,)
+    //   ]
+    //
     return Center(
       child: Container(
-        padding: padding,
+        // padding: padding,
         width: widget.pannelWidth + exWidth,
         height: widget.pannelHeight + exHeight,
-        decoration:
-        BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(8)), color: widget.hudBackgroundColor),
-        child: child,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(8)),
+            color: widget.hudBackgroundColor),
+        child: Stack(
+          children: [
+            Padding(
+              padding: padding,
+              child: child,
+            ),
+            Align(
+              child: Visibility(
+                visible: (_onCancel != null),
+                child: IconButton(
+                  alignment: Alignment.topRight,
+                  iconSize: 20,
+                  padding: EdgeInsets.only(right: 4,top: 4),
+                  icon: Icon(Icons.close),
+                  onPressed: () {
+                    _onCancel!();
+                    hide();
+                    },
+                ),
+              ),
+              alignment: Alignment.topRight,
+            )
+          ],
+        ),
       ),
     );
   }
 
-  void showLoading({String? title, String? message, Duration timeOut = const Duration(
-      seconds: 30), VoidCallback? timeOutCallback, Widget? extendWidget, double? extendWidgetHeight}) {
+  void showLoading(
+      {String? title,
+      String? message,
+      Duration timeOut = const Duration(seconds: 30),
+      VoidCallback? timeOutCallback,
+      Widget? extendWidget,
+      double? extendWidgetHeight,
+      VoidCallback? onCancel}) {
     _title = title;
     _content = message;
     _autoHideDuration = timeOut;
@@ -270,6 +321,7 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
     hudState = GLHUDType.loading;
     _extendWidget = extendWidget;
     _extendWidgetHeight = extendWidgetHeight ?? 0.0;
+    _onCancel = onCancel;
 
     if (_autoHideDuration != null) {
       _delayHideTimer?.cancel();
@@ -299,7 +351,6 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
     hudState = GLHUDType.progress;
     _delayHideTimer?.cancel();
 
-
     // if (_autoHideDuration != null) {
     //   _delayHideTimer?.cancel();
     //   // dlog.i('loading: _autoHideDuration: ${_autoHideDuration}');
@@ -323,7 +374,9 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
   }
 
   void showMessage(
-      {String? title, String? message, Duration duration = const Duration(milliseconds: 1200)}) {
+      {String? title,
+      String? message,
+      Duration duration = const Duration(milliseconds: 1200)}) {
     _delayHideTimer?.cancel();
     _title = title;
     _content = message;
@@ -338,8 +391,10 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
     });
   }
 
-  void showCustom({required Widget child, Duration timeOut = const Duration(
-      seconds: 30), VoidCallback? timeOutCallback}) {
+  void showCustom(
+      {required Widget child,
+      Duration timeOut = const Duration(seconds: 30),
+      VoidCallback? timeOutCallback}) {
     if (child != null) {
       widget.customChild = child;
     }
@@ -392,14 +447,17 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
     }
 
     if (_hasContent) {
-      Text _t1 = GLText(_content ?? "", contentStyle, textAlign: TextAlign.center);
+      Text _t1 =
+          GLText(_content ?? "", contentStyle, textAlign: TextAlign.center);
       Size _s1 = _t1.layout(maxWidth: _maxWidth, minWidth: minWidth);
 
       calcWidth = max(calcWidth, _s1.width + padding.horizontal);
       calcHeight += _s1.height;
 
       if (_hasTitle) {
-        _cols.add(SizedBox(height: _spaceBetweenTitleAndContent,));
+        _cols.add(SizedBox(
+          height: _spaceBetweenTitleAndContent,
+        ));
         calcHeight += _spaceBetweenTitleAndContent;
       }
 
@@ -446,12 +504,16 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
     }
 
     var _spin = CircularProgressIndicator(
-      value: _progressValue, backgroundColor: GLAppStyle.instance.currentConfig.separatorColor,);
+      value: _progressValue,
+      backgroundColor: GLAppStyle.instance.currentConfig.separatorColor,
+    );
     _exH += loadingWidgetWH;
-    _cols.add(SizedBox(width: loadingWidgetWH,height: loadingWidgetWH, child: _spin));
+    _cols.add(SizedBox(
+        width: loadingWidgetWH, height: loadingWidgetWH, child: _spin));
 
     if (_hasContent) {
-      Text _t1 = GLText(_content ?? "", contentStyle, textAlign: TextAlign.center);
+      Text _t1 =
+          GLText(_content ?? "", contentStyle, textAlign: TextAlign.center);
       Size _s1 = _t1.layout(maxWidth: _maxWidth);
 
       _exW = max(_s1.width + padding.horizontal, _exW);
@@ -464,8 +526,10 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
     }
 
     if (_extendWidget != null) {
-      _cols.add(SizedBox(height: _extendWidgetHeight,
-        child: _extendWidget,));
+      _cols.add(SizedBox(
+        height: _extendWidgetHeight,
+        child: _extendWidget,
+      ));
       _exH += _extendWidgetHeight;
     }
 
@@ -516,6 +580,7 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
 
       _exH += _s1.height + 16;
       _exW = max(_exW, _s1.width + padding.horizontal);
+
       _cols.add(_t1);
       _cols.add(Spacer());
     } else {
@@ -527,7 +592,8 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
     _exH += _tLoadingWH;
 
     if (_hasContent) {
-      Text _t1 = GLText(_content ?? "", contentStyle, textAlign: TextAlign.center);
+      Text _t1 =
+          GLText(_content ?? "", contentStyle, textAlign: TextAlign.center);
       Size _s1 = _t1.layout(maxWidth: _maxWidth);
 
       _exH += _s1.height + 16;
@@ -540,8 +606,10 @@ class GLHUDState extends State<GLHUD> with TickerProviderStateMixin {
     }
 
     if (_extendWidget != null) {
-      _cols.add(SizedBox(height: _extendWidgetHeight,
-        child: _extendWidget,));
+      _cols.add(SizedBox(
+        height: _extendWidgetHeight,
+        child: _extendWidget,
+      ));
       _exH += _extendWidgetHeight;
     }
 

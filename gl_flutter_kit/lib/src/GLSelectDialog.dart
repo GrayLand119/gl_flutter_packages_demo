@@ -15,6 +15,8 @@ class GLSelectDialog extends StatefulWidget {
   final bool tapAnywhereToDismiss;
   final List<String>? selectionItems;
 
+  final double itemHeight;
+
   @override
   _State createState() => _State();
 
@@ -24,29 +26,22 @@ class GLSelectDialog extends StatefulWidget {
       this.selectionItems,
       this.cancelTitle,
       this.maskColor,
+        this.itemHeight = 40.0,
       this.tapAnywhereToDismiss = false,
       Key? key})
       : super(key: key);
 
-  static Future<dynamic> show(BuildContext context,
-      {String? title,
-      String? content,
-      String? cancelTitle,
-      List<String>? selectionItems,
-      Color maskColor = const Color(0x4DAEAE),
-      bool tapAnywhereToDismiss = false}) async {
+  show(BuildContext context) async {
     return await showDialog(
-            context: context,
-      builder: (BuildContext context) => GLSelectDialog(
-        title: title,
-        content: content,
-        cancelTitle: cancelTitle,
-        maskColor: maskColor,
-        tapAnywhereToDismiss: tapAnywhereToDismiss,
-        selectionItems: selectionItems,
-      )
-            ) ??
-        false;
+        context: context,
+        builder: (BuildContext context) => GLSelectDialog(
+          title: title,
+          content: content,
+          cancelTitle: cancelTitle,
+          maskColor: maskColor,
+          tapAnywhereToDismiss: tapAnywhereToDismiss,
+          selectionItems: selectionItems,
+        )) ?? false;
   }
 }
 
@@ -123,12 +118,12 @@ class _State extends State<GLSelectDialog> with SingleTickerProviderStateMixin {
 
     for (String item in widget.selectionItems ?? []) {
       actions.add(SizedBox(
-        height: 40,
+        height: widget.itemHeight,
           child: GLTapped(onTap: () {
             _onSelectItem(item);
           }, child: GLText(item, '552'))));
 
-      cH += 40.0;
+      cH += widget.itemHeight;
     }
 
 
